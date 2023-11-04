@@ -19,6 +19,7 @@ app.use("/articles", articles);
 
 // Global error handling
 app.use((err, _req, res, next) => {
+  console.log(err);
   res
     .status(500)
     .send("Uh oh! An unexpected error occured. Email to: samilabud@gmail.com");
