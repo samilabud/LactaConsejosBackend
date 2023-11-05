@@ -7,7 +7,11 @@ const router = express.Router();
 // Get a list of 50 articles
 router.get("/", async (req, res) => {
   const collection = await db.collection("articles");
-  const results = await collection.find({}).limit(50).toArray();
+  const results = await collection
+    .find({})
+    .sort({ modify_date: -1 })
+    .limit(50)
+    .toArray();
 
   res.send(results).status(200);
 });
@@ -56,8 +60,9 @@ router.patch("/:id", async (req, res) => {
   const collection = await db.collection("articles");
   const filter = { _id: ObjectId(req.params.id) };
   req.body.modify_date = new Date();
-  let updateQuery = { $set: req.body };
-  let result = await collection.updateOne(filter, updateQuery);
+  const updateQuery = { $set: req.body };
+  const result = await collection.updateOne(filter, updateQuery);
+  console.log(req);
   res.send(result).status(204);
 });
 
