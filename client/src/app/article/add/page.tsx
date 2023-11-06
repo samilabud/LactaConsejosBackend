@@ -1,29 +1,24 @@
 "use client";
 import { useState, useContext, useEffect, ChangeEvent } from "react";
-import { GlobalContext } from "../../../global-context";
-import { SingleArticleResponse } from "../../../ownTypes";
+import { GlobalContext } from "../../global-context";
 import {
   Box,
+  Chip,
   FormControl,
   Input,
   InputLabel,
   LinearProgress,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
 import SaveIcon from "@mui/icons-material/Save";
 import { Button } from "@mui/material";
 import { Editor } from "react-draft-wysiwyg";
-import {
-  EditorState,
-  ContentState,
-  convertFromHTML,
-  convertToRaw,
-} from "draft-js";
-import { toolbarconfig } from "../../../../_lib/editor-toolbar-config";
+import { EditorState, ContentState, convertToRaw } from "draft-js";
+import { toolbarconfig } from "../../../_lib/editor-toolbar-config";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import Modal from "@mui/material/Modal";
+import { useRouter } from "next/navigation";
 
 const backendBaseURL = process.env.BACKEND_URL;
 const modalStyle = {
@@ -39,65 +34,54 @@ const modalStyle = {
   textAlign: "right",
 };
 
-export default function EditArticle({
-  params: { id },
-}: {
-  params: any;
-  id: string;
-}) {
+export default function Page() {
   const { setGlobalState } = useContext(GlobalContext);
+  const router = useRouter();
+
   useEffect(() => {
     if (setGlobalState) {
-      setGlobalState({ title: "Editar Artículo" });
+      setGlobalState({ title: "Agregar Artículo" });
     }
   }, [setGlobalState]);
 
-  const [dataArticle, setDataArticle] = useState<SingleArticleResponse>();
   const [title, setTitle] = useState<string>();
+  const [category, setCategory] = useState<string>();
+  const [dataCategories, setDataCategories] = useState<string[]>();
+
   const [editorState, setEditorState] = useState(() => {
-    const content = ContentState.createFromText("Content is loading...");
+    const content = ContentState.createFromText("");
     return EditorState.createWithContent(content);
   });
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File>();
 
   useEffect(() => {
-    const loadArticles = async () => {
+    const loadCategories = async () => {
       try {
-        const response = await fetch(`${backendBaseURL}/articles/${id}`, {
+        const response = await fetch(`${backendBaseURL}/articles/categories`, {
           mode: "cors",
         });
-        setDataArticle(await response?.json());
+        setDataCategories(await response?.json());
       } catch (err) {
-        console.log(err, `Could not load the article id:${id}`);
+        console.log(err, `Could not load the categories`);
       }
     };
-    loadArticles();
+    loadCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    setTitle(dataArticle?.title);
-
-    const blocksFromHTML = convertFromHTML(dataArticle?.content || "");
-    const content = ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap
-    );
-    setEditorState(EditorState.createWithContent(content));
-  }, [dataArticle]);
-
-  const saveArticle = (imagePath: string | undefined) => {
+  const addArticle = (imagePath: string) => {
     const data = {
       title: title,
       content: convertContentToHTML(editorState),
-      image: imagePath ? `/images/articles/${imagePath}` : dataArticle?.image,
+      image: `/images/articles/${imagePath}`,
+      category: category,
     };
-    fetch(`${backendBaseURL}/articles/${id}`, {
+    fetch(`${backendBaseURL}/articles/`, {
       headers: {
         "Content-Type": "application/json", // Set the content type if you're sending JSON data
       },
-      method: "PATCH",
+      method: "POST",
       mode: "cors",
       body: JSON.stringify(data),
     })
@@ -110,10 +94,7 @@ export default function EditArticle({
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!file) {
-      saveArticle(undefined);
-      return;
-    }
+    if (!file) return;
 
     try {
       const data = new FormData();
@@ -127,7 +108,7 @@ export default function EditArticle({
       if (!res.ok) throw new Error(await res.text());
       const { path } = await res.json();
       // @ts-ignore
-      saveArticle(path);
+      addArticle(path);
     } catch (e: any) {
       // Handle errors here
       console.error(e);
@@ -135,13 +116,25 @@ export default function EditArticle({
   };
 
   const handleOpenModal = () => setOpen(true);
-  const handleCloseModal = () => setOpen(false);
+  const handleCloseModal = () => {
+    setOpen(false);
+    setTimeout(() => {
+      router.push("/");
+    }, 500);
+  };
 
   const onTitleChange = (
     event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     setTitle(event.target.value);
   };
+
+  const onCategoryChange = (
+    event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setCategory(event.target.value);
+  };
+
   const onEditorChange = (newEditorState: any) => {
     setEditorState(newEditorState);
   };
@@ -154,7 +147,7 @@ export default function EditArticle({
     return markup;
   }
 
-  return dataArticle ? (
+  return dataCategories ? (
     <>
       <form onSubmit={onSubmit}>
         <FormControl fullWidth>
@@ -169,6 +162,31 @@ export default function EditArticle({
             required
             onChange={(e) => onTitleChange(e)}
           />
+        </FormControl>
+
+        <FormControl sx={{ marginTop: 5 }}>
+          <InputLabel htmlFor="category" focused shrink>
+            Categoria
+          </InputLabel>
+          <Input
+            id="category"
+            aria-describedby="Categoría del articulo"
+            value={category}
+            fullWidth
+            required
+            onChange={(e) => onCategoryChange(e)}
+          />
+          <Box sx={{ marginTop: 2 }}>
+            {dataCategories.map((category, idx) => (
+              <Chip
+                key={idx}
+                label={category}
+                variant="outlined"
+                onClick={() => setCategory(category)}
+                sx={{ marginRight: 1 }}
+              />
+            ))}
+          </Box>
         </FormControl>
 
         <FormControl fullWidth sx={{ marginTop: 5, marginBottom: 5 }}>
@@ -188,12 +206,6 @@ export default function EditArticle({
         </FormControl>
 
         <FormControl fullWidth sx={{ marginTop: 5, marginBottom: 5 }}>
-          <Image
-            width={80}
-            height={80}
-            src={`${backendBaseURL}${dataArticle.image}`}
-            alt={dataArticle.title}
-          />
           <Input
             id="image"
             aria-describedby="Imagen para el articulo"
@@ -226,7 +238,7 @@ export default function EditArticle({
             component="h2"
             sx={{ textAlign: "center" }}
           >
-            Artículo actualizado satisfactoriamente!
+            Artículo agregado satisfactoriamente!
           </Typography>
           <Button onClick={handleCloseModal}>Cerrar</Button>
         </Box>

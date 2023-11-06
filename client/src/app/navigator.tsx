@@ -15,14 +15,14 @@ import Link from "next/link";
 const categories = [
   {
     id: "Articulos",
-    href: "/",
     children: [
       {
         id: "Listado",
         icon: <ArticleIcon />,
         active: true,
+        href: "/",
       },
-      { id: "Publicar", icon: <PublishIcon />, href: "" },
+      { id: "Publicar", icon: <PublishIcon />, href: "/article/add/" },
     ],
   },
 ];
@@ -63,23 +63,23 @@ export default function Navigator(props: DrawerProps) {
             <ListItemText>Inicio</ListItemText>
           </Link>
         </ListItem>
-        {categories.map(({ id, children, href }) => (
-          <Link href={href} key={id}>
-            <Box sx={{ bgcolor: "#101F33" }}>
-              <ListItem sx={{ py: 2, px: 3 }}>
-                <ListItemText sx={{ color: "#fff" }}>{id}</ListItemText>
-              </ListItem>
-              {children.map(({ id: childId, icon, active }) => (
-                <ListItem disablePadding key={childId}>
+        {categories.map(({ id, children }) => (
+          <Box sx={{ bgcolor: "#101F33" }} key={id}>
+            <ListItem sx={{ py: 2, px: 3 }}>
+              <ListItemText sx={{ color: "#fff" }}>{id}</ListItemText>
+            </ListItem>
+            {children.map(({ id: childId, icon, active, href }) => (
+              <Link href={href} key={childId}>
+                <ListItem disablePadding>
                   <ListItemButton selected={active} sx={item}>
                     <ListItemIcon>{icon}</ListItemIcon>
                     <ListItemText>{childId}</ListItemText>
                   </ListItemButton>
                 </ListItem>
-              ))}
-              <Divider sx={{ mt: 2 }} />
-            </Box>
-          </Link>
+              </Link>
+            ))}
+            <Divider sx={{ mt: 2 }} />
+          </Box>
         ))}
       </List>
     </Drawer>

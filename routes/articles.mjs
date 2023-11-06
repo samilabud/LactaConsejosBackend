@@ -51,6 +51,7 @@ router.post("/", async (req, res) => {
   const collection = await db.collection("articles");
   const newArticle = req.body;
   newArticle.date = new Date();
+  newArticle.modify_date = new Date();
   const result = await collection.insertOne(newArticle);
   res.send(result).status(204);
 });
