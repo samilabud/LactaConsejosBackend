@@ -19,7 +19,8 @@
     "next": "14.0.1",
     "react": "^18",
     "react-dom": "^18",
-    "react-draft-wysiwyg": "^1.15.0"
+    "react-draft-wysiwyg": "^1.15.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/draftjs-to-html": "^0.8.3",
@@ -27,6 +28,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-draft-wysiwyg": "^1.13.6",
+    "@types/uuid": "^9.0.6",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.1",

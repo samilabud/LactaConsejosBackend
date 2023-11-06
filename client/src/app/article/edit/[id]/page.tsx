@@ -60,6 +60,7 @@ export default function EditArticle({
     return EditorState.createWithContent(content);
   });
   const [open, setOpen] = useState(false);
+  const [file, setFile] = useState<File>();
 
   useEffect(() => {
     const loadArticles = async () => {
@@ -87,11 +88,13 @@ export default function EditArticle({
     setEditorState(EditorState.createWithContent(content));
   }, [dataArticle]);
 
-  const saveArticle = () => {
+  const saveArticle = (imagePath: string | undefined) => {
     const data = {
       title: title,
       content: convertContentToHTML(editorState),
+      image: imagePath ? `/images/articles/${imagePath}` : dataArticle?.image,
     };
+    console.log(data);
     fetch(`${backendBaseURL}/articles/${id}`, {
       headers: {
         "Content-Type": "application/json", // Set the content type if you're sending JSON data
@@ -106,6 +109,32 @@ export default function EditArticle({
         handleOpenModal();
       })
       .catch((err) => console.error(err));
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!file) {
+      saveArticle();
+      return;
+    }
+
+    try {
+      const data = new FormData();
+      data.set("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: data,
+      });
+      // handle the error
+      if (!res.ok) throw new Error(await res.text());
+      const { path } = await res.json();
+      // @ts-ignore
+      saveArticle(path);
+    } catch (e: any) {
+      // Handle errors here
+      console.error(e);
+    }
   };
 
   const handleOpenModal = () => setOpen(true);
@@ -130,9 +159,9 @@ export default function EditArticle({
 
   return dataArticle ? (
     <>
-      <FormGroup>
+      <form onSubmit={onSubmit}>
         <FormControl fullWidth>
-          <InputLabel htmlFor="title" disableAnimation>
+          <InputLabel htmlFor="title" focused shrink>
             Titulo
           </InputLabel>
           <Input
@@ -146,7 +175,7 @@ export default function EditArticle({
         </FormControl>
 
         <FormControl fullWidth sx={{ marginTop: 5, marginBottom: 5 }}>
-          <InputLabel htmlFor="content" disableAnimation>
+          <InputLabel htmlFor="content" focused shrink>
             Contenido
           </InputLabel>
           <Box sx={{ marginTop: 5 }}>
@@ -170,24 +199,23 @@ export default function EditArticle({
           />
           <Input
             id="image"
-            aria-describedby="Contenido del articulo"
-            value={dataArticle.image}
+            aria-describedby="Imagen para el articulo"
             fullWidth
-            multiline
-            required
+            type="file"
+            name="file"
+            onChange={(e) => {
+              const inputElement = e.target as HTMLInputElement;
+              setFile(inputElement.files?.[0]);
+            }}
           />
         </FormControl>
 
         <FormControl fullWidth>
-          <Button
-            endIcon={<SaveIcon />}
-            fullWidth
-            onClick={() => saveArticle()}
-          >
+          <Button endIcon={<SaveIcon />} fullWidth type="submit">
             Save
           </Button>
         </FormControl>
-      </FormGroup>
+      </form>
       <Modal
         open={open}
         onClose={handleCloseModal}
