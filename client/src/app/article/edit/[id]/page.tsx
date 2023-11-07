@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import SaveIcon from "@mui/icons-material/Save";
 import { Button } from "@mui/material";
-import { Editor } from "react-draft-wysiwyg";
+import { EditorProps } from "react-draft-wysiwyg";
 import {
   EditorState,
   ContentState,
@@ -24,6 +24,7 @@ import { toolbarconfig } from "../../../../_lib/editor-toolbar-config";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import Modal from "@mui/material/Modal";
+import dynamic from "next/dynamic";
 
 const backendBaseURL = process.env.BACKEND_URL;
 const modalStyle = {
@@ -39,11 +40,14 @@ const modalStyle = {
   textAlign: "right",
 };
 
-export default function EditArticle({
+const Editor = dynamic<EditorProps>(
+  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+  { ssr: false }
+);
+
+export default function Edit({
+  //@ts-ignore
   params: { id },
-}: {
-  params: any;
-  id: string;
 }) {
   const { setGlobalState } = useContext(GlobalContext);
   useEffect(() => {

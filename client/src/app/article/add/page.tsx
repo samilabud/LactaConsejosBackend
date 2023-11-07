@@ -12,13 +12,14 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { Button } from "@mui/material";
-import { Editor } from "react-draft-wysiwyg";
+import { EditorProps } from "react-draft-wysiwyg";
 import { EditorState, ContentState, convertToRaw } from "draft-js";
 import { toolbarconfig } from "../../../_lib/editor-toolbar-config";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import Modal from "@mui/material/Modal";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 
 const backendBaseURL = process.env.BACKEND_URL;
 const modalStyle = {
@@ -34,7 +35,12 @@ const modalStyle = {
   textAlign: "right",
 };
 
-export default function Page() {
+const Editor = dynamic<EditorProps>(
+  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+  { ssr: false }
+);
+
+export default function Add() {
   const { setGlobalState } = useContext(GlobalContext);
   const router = useRouter();
 
