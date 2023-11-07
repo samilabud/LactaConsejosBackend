@@ -22,7 +22,7 @@ module.exports = (phase, { defaultConfig }) => {
 
   return {
     env: {
-      BACKEND_URL: "https://lactaconsejosws.onrender.com/",
+      BACKEND_URL: "https://lactaconsejosws.onrender.com",
     },
     images: {
       remotePatterns: [
