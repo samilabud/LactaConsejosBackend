@@ -28,8 +28,8 @@ module.exports = (phase, { defaultConfig }) => {
       remotePatterns: [
         {
           protocol: "https",
-          hostname: "https://lactaconsejosws.onrender.com/",
-          port: process.env.PORT,
+          hostname: "lactaconsejosws.onrender.com/",
+          port: "",
           pathname: "/images/articles/**",
         },
       ],
