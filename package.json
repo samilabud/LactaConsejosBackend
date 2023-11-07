@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "format": "prettier --single-quote --check .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --experimental-modules index.mjs"
+    "dev": "nodemon --experimental-modules index.mjs",
+    "render-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [],
   "author": "",
