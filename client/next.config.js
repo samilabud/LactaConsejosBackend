@@ -21,7 +21,6 @@ module.exports = (phase, { defaultConfig }) => {
   }
 
   return {
-    output: "export",
     env: {
       BACKEND_URL: "https://lactaconsejosws.onrender.com/",
     },
