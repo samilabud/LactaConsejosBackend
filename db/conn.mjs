@@ -4,6 +4,8 @@ const connectionString =
   process.env.MONGO_URI ||
   "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.2";
 
+console.log(connectionString);
+
 const client = new MongoClient(connectionString);
 
 let conn;
