@@ -27,6 +27,7 @@ import Modal from "@mui/material/Modal";
 import dynamic from "next/dynamic";
 
 const backendBaseURL = process.env.BACKEND_URL;
+console.log({ backendBaseURL });
 const modalStyle = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -91,12 +92,20 @@ export default function Edit({
     setEditorState(EditorState.createWithContent(content));
   }, [dataArticle]);
 
-  const saveArticle = (imagePath: string | undefined) => {
+  const saveArticle = async () => {
+    let bufferImage = null;
+    if (file) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      bufferImage = buffer.toString("base64");
+    }
+
     const data = {
       title: title,
       content: convertContentToHTML(editorState),
-      image: imagePath ? `/images/articles/${imagePath}` : dataArticle?.image,
+      image: file ? bufferImage : dataArticle?.image,
     };
+
     fetch(`${backendBaseURL}/articles/${id}`, {
       headers: {
         "Content-Type": "application/json", // Set the content type if you're sending JSON data
@@ -114,24 +123,8 @@ export default function Edit({
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!file) {
-      saveArticle(undefined);
-      return;
-    }
-
     try {
-      const data = new FormData();
-      data.set("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: data,
-      });
-      // handle the error
-      if (!res.ok) throw new Error(await res.text());
-      const { path } = await res.json();
-      // @ts-ignore
-      saveArticle(path);
+      saveArticle();
     } catch (e: any) {
       // Handle errors here
       console.error(e);
@@ -195,7 +188,7 @@ export default function Edit({
           <Image
             width={80}
             height={80}
-            src={`${backendBaseURL}${dataArticle.image}`}
+            src={`data:image/png;base64,${dataArticle.image}`}
             alt={dataArticle.title}
           />
           <Input

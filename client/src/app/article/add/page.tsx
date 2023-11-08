@@ -76,11 +76,18 @@ export default function Add() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const addArticle = (imagePath: string) => {
+  const addArticle = async () => {
+    let bufferImage = null;
+    if (file) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      bufferImage = buffer.toString("base64");
+    }
+
     const data = {
       title: title,
       content: convertContentToHTML(editorState),
-      image: `/images/articles/${imagePath}`,
+      image: bufferImage,
       category: category,
     };
     fetch(`${backendBaseURL}/articles/`, {
@@ -103,18 +110,7 @@ export default function Add() {
     if (!file) return;
 
     try {
-      const data = new FormData();
-      data.set("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: data,
-      });
-      // handle the error
-      if (!res.ok) throw new Error(await res.text());
-      const { path } = await res.json();
-      // @ts-ignore
-      addArticle(path);
+      addArticle();
     } catch (e: any) {
       // Handle errors here
       console.error(e);

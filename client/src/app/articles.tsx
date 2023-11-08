@@ -105,7 +105,7 @@ export default function Articles({
                   <Image
                     width={80}
                     height={80}
-                    src={`${backendBaseURL}${row.image}`}
+                    src={`data:image/png;base64,${row.image}`}
                     alt={row.title}
                   />
                 </TableCell>
