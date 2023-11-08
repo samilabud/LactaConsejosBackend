@@ -30,6 +30,30 @@ router.get("/latest/:category", async (req, res) => {
 });
 
 // Fetches the latest articles by category with a limit of 5
+router.get("/search/:category", async (req, res) => {
+  const collection = await db.collection("articles");
+  const searchStr = req.body.search;
+  const query = {
+    category: req.params.category,
+  };
+  // Return only the `title` of each matched document
+  let projection = {};
+  if (searchStr) {
+    query.$text = { $search: searchStr };
+    projection = {
+      _id: 0,
+      title: 1,
+      content: 1,
+      image: 1,
+      category: 1,
+    };
+  }
+  console.log(query);
+  const results = await collection.find(query).project(projection).toArray();
+  res.send(results).status(200);
+});
+
+// Fetches the distinct categories in the system
 router.get("/categories", async (req, res) => {
   const collection = await db.collection("articles");
   const results = await collection.distinct("category");
