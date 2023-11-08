@@ -30,7 +30,7 @@ router.get("/latest/:category", async (req, res) => {
 });
 
 // Fetches the latest articles by category with a limit of 5
-router.get("/search/", async (req, res) => {
+router.post("/search/", async (req, res) => {
   const collection = await db.collection("articles");
   const searchStr = req.body.search;
   const category = req.body.category;
