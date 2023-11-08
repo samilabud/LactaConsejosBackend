@@ -46,7 +46,7 @@ router.post("/search/", async (req, res) => {
   if (searchStr) {
     query.$text = { $search: searchStr };
     projection = {
-      _id: 0,
+      _id: 1,
       title: 1,
       content: 1,
       image: 1,
