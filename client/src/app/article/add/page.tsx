@@ -85,10 +85,10 @@ export default function Add() {
     }
 
     const data = {
-      title: title,
+      title: title ? title.trim() : "",
       content: convertContentToHTML(editorState),
       image: bufferImage,
-      category: category,
+      category: category ? category.trim() : "",
     };
     fetch(`${backendBaseURL}/articles/`, {
       headers: {

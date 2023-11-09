@@ -4,6 +4,7 @@ export type SingleArticleResponse =
       title: string;
       content: string;
       image: string;
+      category: string;
     }
   | undefined;
 export type ArticlesResponse =
@@ -12,5 +13,6 @@ export type ArticlesResponse =
       title: string;
       content: string;
       image: string;
+      category: string;
     }[]
   | undefined;

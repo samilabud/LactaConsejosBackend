@@ -9,6 +9,7 @@ import {
   InputLabel,
   LinearProgress,
   Typography,
+  Chip,
 } from "@mui/material";
 import Image from "next/image";
 import SaveIcon from "@mui/icons-material/Save";
@@ -27,7 +28,6 @@ import Modal from "@mui/material/Modal";
 import dynamic from "next/dynamic";
 
 const backendBaseURL = process.env.BACKEND_URL;
-console.log({ backendBaseURL });
 const modalStyle = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -59,6 +59,8 @@ export default function Edit({
 
   const [dataArticle, setDataArticle] = useState<SingleArticleResponse>();
   const [title, setTitle] = useState<string>();
+  const [category, setCategory] = useState<string>();
+  const [dataCategories, setDataCategories] = useState<string[]>();
   const [editorState, setEditorState] = useState(() => {
     const content = ContentState.createFromText("Content is loading...");
     return EditorState.createWithContent(content);
@@ -82,6 +84,27 @@ export default function Edit({
   }, []);
 
   useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetch(`${backendBaseURL}/articles/categories`, {
+          mode: "cors",
+        });
+        setDataCategories(await response?.json());
+      } catch (err) {
+        console.log(err, `Could not load the categories`);
+      }
+    };
+    loadCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onCategoryChange = (
+    event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setCategory(event.target.value);
+  };
+
+  useEffect(() => {
     setTitle(dataArticle?.title);
 
     const blocksFromHTML = convertFromHTML(dataArticle?.content || "");
@@ -101,9 +124,10 @@ export default function Edit({
     }
 
     const data = {
-      title: title,
+      title: title ? title.trim() : "",
       content: convertContentToHTML(editorState),
       image: file ? bufferImage : dataArticle?.image,
+      category: category ? category.trim() : "",
     };
 
     fetch(`${backendBaseURL}/articles/${id}`, {
@@ -151,7 +175,7 @@ export default function Edit({
     return markup;
   }
 
-  return dataArticle ? (
+  return dataArticle && dataCategories ? (
     <>
       <form onSubmit={onSubmit}>
         <FormControl fullWidth>
@@ -167,7 +191,31 @@ export default function Edit({
             onChange={(e) => onTitleChange(e)}
           />
         </FormControl>
-
+        <FormControl sx={{ marginTop: 5 }}>
+          <InputLabel htmlFor="category" focused shrink>
+            Categoria
+          </InputLabel>
+          <Input
+            id="category"
+            aria-describedby="Categoría del articulo"
+            value={category}
+            defaultValue={dataArticle.category}
+            fullWidth
+            required
+            onChange={(e) => onCategoryChange(e)}
+          />
+          <Box sx={{ marginTop: 2 }}>
+            {dataCategories.map((category, idx) => (
+              <Chip
+                key={idx}
+                label={category}
+                variant="outlined"
+                onClick={() => setCategory(category)}
+                sx={{ marginRight: 1 }}
+              />
+            ))}
+          </Box>
+        </FormControl>
         <FormControl fullWidth sx={{ marginTop: 5, marginBottom: 5 }}>
           <InputLabel htmlFor="content" focused shrink>
             Contenido
