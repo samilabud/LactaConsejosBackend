@@ -11,3 +11,7 @@
 
 mongoimport --uri mongodb+srv://lactaconsejosusr:y9ku6E0LnDEPWat8@lactaconsejoscluster.ceqb5xi.mongodb.net/lactaconsejosdb --collection articles --type JSON --file articlesbase64.json
 mongoexport --db lactaconsejosdb --collection articles --type=json --out ~/code/LactaConsejosBackend/articlesbase64.json
+
+//GET DB Backup from server
+mongoexport --collection=articles --out ~/code/LactaConsejosBackend/articlesbase64.json mongodb+srv://lactaconsejosusr:y9ku6E0LnDEPWat8@lactaconsejoscluster.ceqb5xi.mongodb.net/lactaconsejosdb
+mongoimport --uri mongodb+srv://lactaconsejosusr:y9ku6E0LnDEPWat8@lactaconsejoscluster.ceqb5xi.mongodb.net/lactaconsejosdb --collection articles --type JSON --file articlesbase64.json
