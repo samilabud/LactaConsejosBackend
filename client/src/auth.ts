@@ -4,7 +4,7 @@ import { authConfig } from "./auth.config";
 import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import type { User } from "./app/lib/definition";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs-react";
 
 async function getUser(email: string): Promise<User | undefined> {
   try {
