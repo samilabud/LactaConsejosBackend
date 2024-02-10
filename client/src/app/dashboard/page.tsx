@@ -1,33 +1,18 @@
-"use client";
-import { useState, useContext, useEffect } from "react";
-import { GlobalContext } from "./global-context";
-import Articles from "./articles";
-import { ArticlesResponse } from "./ownTypes";
-
 export default function Page() {
-  const { setGlobalState } = useContext(GlobalContext);
-  useEffect(() => {
-    if (setGlobalState) {
-      setGlobalState({ title: "Artículos" });
-    }
-  }, [setGlobalState]);
-
-  const [dataArticles, setDataArticles] = useState<ArticlesResponse>();
-  const backendBaseURL = process.env.BACKEND_URL;
-  const loadArticles = async () => {
-    try {
-      const response = await fetch(`${backendBaseURL}/articles/`, {
-        mode: "cors",
-      });
-      setDataArticles(await response?.json());
-    } catch (err) {
-      console.log(err, "Could not load articles");
-    }
-  };
-  useEffect(() => {
-    loadArticles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return <Articles dataArticles={dataArticles} loadArticles={loadArticles} />;
+  return (
+    <div className="flex flex-wrap">
+      <a className="menuItem" href="/dashboard/articles">
+        Ver Lista de Artículos
+      </a>
+      <a className="menuItem" href="/dashboard/article/add">
+        Publicar Articulos
+      </a>
+      <a className="menuItem" href="/dashboard">
+        Cambiar Datos de Perfil
+      </a>
+      <a className="menuItem" href="/dashboard">
+        Publicar centro de lactancia
+      </a>
+    </div>
+  );
 }

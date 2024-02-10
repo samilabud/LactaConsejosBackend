@@ -20,7 +20,7 @@ const categories = [
         id: "Listado",
         icon: <ArticleIcon />,
         active: true,
-        href: "/dashboard",
+        href: "/dashboard/articles",
       },
       {
         id: "Publicar",

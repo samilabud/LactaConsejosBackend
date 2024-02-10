@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import LinearProgress from "@mui/material/LinearProgress";
-import { ArticlesResponse } from "./ownTypes";
+import { ArticlesResponse } from "../ownTypes";
 import Box from "@mui/material/Box";
 import { Button, Typography } from "@mui/material";
 import parse from "html-react-parser";
