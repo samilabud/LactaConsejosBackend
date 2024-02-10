@@ -20,9 +20,13 @@ const categories = [
         id: "Listado",
         icon: <ArticleIcon />,
         active: true,
-        href: "/",
+        href: "/dashboard",
       },
-      { id: "Publicar", icon: <PublishIcon />, href: "/article/add/" },
+      {
+        id: "Publicar",
+        icon: <PublishIcon />,
+        href: "/dashboard/article/add/",
+      },
     ],
   },
 ];
@@ -55,11 +59,11 @@ export default function Navigator(props: DrawerProps) {
         </ListItem>
         <ListItem sx={{ ...item, ...itemCategory }}>
           <ListItemIcon>
-            <Link href={`/`}>
+            <Link href={`/dashboard`}>
               <HomeIcon />
             </Link>
           </ListItemIcon>
-          <Link href={`/`}>
+          <Link href={`/dashboard`}>
             <ListItemText>Inicio</ListItemText>
           </Link>
         </ListItem>

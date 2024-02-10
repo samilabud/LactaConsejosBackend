@@ -1,11 +1,12 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
-import { authenticate } from "../lib/actions";
+import { authenticate } from "../../_lib/actions";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import KeyIcon from "@mui/icons-material/Key";
 import ErrorIcon from "@mui/icons-material/Error";
 import { Button } from "@/app/(ui)/button";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 const LoginPage = () => {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
@@ -78,7 +79,7 @@ function LoginButton() {
 
   return (
     <Button className="mt-4 w-full" aria-disabled={pending}>
-      Log in
+      Log in <KeyboardArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>
   );
 }
