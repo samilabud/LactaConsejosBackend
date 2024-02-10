@@ -5,7 +5,7 @@ import { authenticate } from "../lib/actions";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import KeyIcon from "@mui/icons-material/Key";
 import ErrorIcon from "@mui/icons-material/Error";
-import { Button } from "@/ui/button";
+import { Button } from "@/app/(ui)/button";
 
 const LoginPage = () => {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
