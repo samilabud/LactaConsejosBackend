@@ -5,6 +5,7 @@ import { authenticate } from "../lib/actions";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import KeyIcon from "@mui/icons-material/Key";
 import ErrorIcon from "@mui/icons-material/Error";
+import { Button } from "@/ui/button";
 
 const LoginPage = () => {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
@@ -76,9 +77,9 @@ function LoginButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button className="mt-4 w-full" aria-disabled={pending}>
+    <Button className="mt-4 w-full" aria-disabled={pending}>
       Log in
-    </button>
+    </Button>
   );
 }
 export default LoginPage;
