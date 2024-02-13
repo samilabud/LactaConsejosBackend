@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
-import { authenticate } from "../../_lib/actions";
+import { authenticate } from "../lib/actions";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import KeyIcon from "@mui/icons-material/Key";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -78,9 +78,8 @@ const LoginPage = () => {
 
 function LoginButton() {
   const { pending } = useFormStatus();
-
   return (
-    <Button className="mt-4 w-full" aria-disabled={pending}>
+    <Button className="mt-4 w-full" aria-disabled={pending} type="submit">
       <span>Iniciar sesión</span>
       <KeyboardArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>

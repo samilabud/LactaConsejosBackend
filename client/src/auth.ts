@@ -32,6 +32,7 @@ export const { auth, signIn, signOut } = NextAuth({
           // const passwordsMatch = await bcrypt.compare(password, user.password);
 
           // if (passwordsMatch) return user;
+          // console.log({ email, password });
           const userMock = {
             id: "1",
             name: "Paola Guzmán",
@@ -39,9 +40,11 @@ export const { auth, signIn, signOut } = NextAuth({
             password: "123456",
             username: "paolaguzman",
           };
-
+          return userMock;
           if (email === userMock.email && password === userMock.password) {
-            return userMock;
+            // console.log("going to be");
+            // // return true;
+            return await Promise.resolve(userMock);
           }
         }
 
