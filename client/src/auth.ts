@@ -37,6 +37,7 @@ export const { auth, signIn, signOut } = NextAuth({
             name: "Paola Guzmán",
             email: "admin@lactaconsejos.com",
             password: "123456",
+            username: "paolaguzman",
           };
 
           if (email === userMock.email && password === userMock.password) {

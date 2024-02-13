@@ -11,7 +11,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import ArticleIcon from "@mui/icons-material/Article";
 import PublishIcon from "@mui/icons-material/Publish";
 import Link from "next/link";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { GlobalContext } from "./global-context";
+import { signOut } from "../../auth";
 
 const categories = [
   {
@@ -94,6 +96,18 @@ export default function Navigator(props: DrawerProps) {
             <Divider sx={{ mt: 2 }} />
           </Box>
         ))}
+
+        <ListItemButton
+          sx={{ ...item, ...itemCategory }}
+          onClick={() => {
+            signOut();
+          }}
+        >
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText>Salir</ListItemText>
+        </ListItemButton>
       </List>
     </Drawer>
   );
