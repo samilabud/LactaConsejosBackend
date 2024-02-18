@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import Divider from "@mui/material/Divider";
 import Drawer, { DrawerProps } from "@mui/material/Drawer";
@@ -13,7 +14,9 @@ import PublishIcon from "@mui/icons-material/Publish";
 import Link from "next/link";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { GlobalContext } from "./global-context";
-import { signOut } from "../../auth";
+import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const categories = [
   {
@@ -54,6 +57,12 @@ const itemCategory = {
 export default function Navigator(props: DrawerProps) {
   const { ...other } = props;
   const { globalState } = React.useContext(GlobalContext);
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/api/auth/signin");
+    },
+  });
 
   return (
     <Drawer variant="permanent" {...other}>
@@ -100,6 +109,7 @@ export default function Navigator(props: DrawerProps) {
         <ListItemButton
           sx={{ ...item, ...itemCategory }}
           onClick={() => {
+            console.log("exit");
             signOut();
           }}
         >
