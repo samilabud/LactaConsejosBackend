@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import Divider from "@mui/material/Divider";
 import Drawer, { DrawerProps } from "@mui/material/Drawer";
@@ -11,6 +12,11 @@ import HomeIcon from "@mui/icons-material/Home";
 import ArticleIcon from "@mui/icons-material/Article";
 import PublishIcon from "@mui/icons-material/Publish";
 import Link from "next/link";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { GlobalContext } from "./global-context";
+import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const categories = [
   {
@@ -20,9 +26,15 @@ const categories = [
         id: "Listado",
         icon: <ArticleIcon />,
         active: true,
-        href: "/",
+        href: "/dashboard/articles",
+        pageTitle: "Artículos",
       },
-      { id: "Publicar", icon: <PublishIcon />, href: "/article/add/" },
+      {
+        id: "Publicar",
+        icon: <PublishIcon />,
+        href: "/dashboard/article/add/",
+        pageTitle: "Agregar Artículo",
+      },
     ],
   },
 ];
@@ -44,6 +56,13 @@ const itemCategory = {
 
 export default function Navigator(props: DrawerProps) {
   const { ...other } = props;
+  const { globalState } = React.useContext(GlobalContext);
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/api/auth/signin");
+    },
+  });
 
   return (
     <Drawer variant="permanent" {...other}>
@@ -53,25 +72,30 @@ export default function Navigator(props: DrawerProps) {
         >
           Administración Lacta Consejos
         </ListItem>
-        <ListItem sx={{ ...item, ...itemCategory }}>
-          <ListItemIcon>
-            <Link href={`/`}>
+
+        <Link href={`/dashboard`}>
+          <ListItemButton
+            sx={{ ...item, ...itemCategory }}
+            selected={globalState?.title === "Dashboard"}
+          >
+            <ListItemIcon>
               <HomeIcon />
-            </Link>
-          </ListItemIcon>
-          <Link href={`/`}>
+            </ListItemIcon>
             <ListItemText>Inicio</ListItemText>
-          </Link>
-        </ListItem>
+          </ListItemButton>
+        </Link>
         {categories.map(({ id, children }) => (
           <Box sx={{ bgcolor: "#101F33" }} key={id}>
             <ListItem sx={{ py: 2, px: 3 }}>
               <ListItemText sx={{ color: "#fff" }}>{id}</ListItemText>
             </ListItem>
-            {children.map(({ id: childId, icon, active, href }) => (
+            {children.map(({ id: childId, icon, href, pageTitle }) => (
               <Link href={href} key={childId}>
                 <ListItem disablePadding>
-                  <ListItemButton selected={active} sx={item}>
+                  <ListItemButton
+                    selected={globalState?.title === pageTitle}
+                    sx={item}
+                  >
                     <ListItemIcon>{icon}</ListItemIcon>
                     <ListItemText>{childId}</ListItemText>
                   </ListItemButton>
@@ -81,6 +105,19 @@ export default function Navigator(props: DrawerProps) {
             <Divider sx={{ mt: 2 }} />
           </Box>
         ))}
+
+        <ListItemButton
+          sx={{ ...item, ...itemCategory }}
+          onClick={() => {
+            console.log("exit");
+            signOut();
+          }}
+        >
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText>Salir</ListItemText>
+        </ListItemButton>
       </List>
     </Drawer>
   );

@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "version": "0.1.0",
+  "version": "1.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,17 +13,26 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.16",
+    "@vercel/postgres": "^0.7.2",
+    "bcrypt": "^5.1.1",
+    "bcryptjs-react": "^2.4.6",
     "bson": "^6.2.0",
+    "clsx": "^2.1.0",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
     "html-react-parser": "^5.0.6",
     "next": "14.0.1",
+    "next-auth": "^4.24.6",
+    "node-pre-gyp": "^0.17.0",
     "react": "^18",
     "react-dom": "^18",
     "react-draft-wysiwyg": "^1.15.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/draftjs-to-html": "^0.8.3",
     "@types/node": "^20",
     "@types/react": "^18",

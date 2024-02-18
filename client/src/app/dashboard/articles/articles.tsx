@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import LinearProgress from "@mui/material/LinearProgress";
-import { ArticlesResponse } from "./ownTypes";
+import { ArticlesResponse } from "../ownTypes";
 import Box from "@mui/material/Box";
 import { Button, Typography } from "@mui/material";
 import parse from "html-react-parser";
@@ -59,7 +59,7 @@ export default function Articles({
       mode: "cors",
     })
       .then((res) => res.json())
-      .then((res) => {
+      .then(() => {
         handleCloseModal();
         loadArticles();
       })
@@ -110,7 +110,7 @@ export default function Articles({
                   />
                 </TableCell>
                 <TableCell align="right">
-                  <Link href={`/article/edit/${row._id}`}>
+                  <Link href={`/dashboard/article/edit/${row._id}`}>
                     <EditIcon sx={{ color: "#009BE5" }} />
                   </Link>
                   <DeleteIcon
