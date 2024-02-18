@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "version": "0.1.0",
+  "version": "1.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -22,7 +22,7 @@
     "draftjs-to-html": "^0.9.1",
     "html-react-parser": "^5.0.6",
     "next": "14.0.1",
-    "next-auth": "^5.0.0-beta.7",
+    "next-auth": "^4.24.6",
     "node-pre-gyp": "^0.17.0",
     "react": "^18",
     "react-dom": "^18",

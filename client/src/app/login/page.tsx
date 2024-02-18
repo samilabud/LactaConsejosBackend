@@ -1,18 +1,24 @@
 "use client";
-
 import { useFormState, useFormStatus } from "react-dom";
-import { authenticate } from "../lib/actions";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import KeyIcon from "@mui/icons-material/Key";
 import ErrorIcon from "@mui/icons-material/Error";
 import { Button } from "@/app/(ui)/button";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { useState, FormEvent, ReactElement, ReactHTMLElement } from "react";
+import { signIn } from "next-auth/react";
 
 const LoginPage = () => {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    await signIn("credentials", { email, password, redirect: false });
+  };
 
   return (
-    <form action={dispatch} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`mb-3 text-2xl`}>
           Por favor, inicie sesión para continuar.
@@ -64,12 +70,12 @@ const LoginPage = () => {
           aria-live="polite"
           aria-atomic="true"
         >
-          {errorMessage && (
+          {/* {errorMessage && (
             <>
               <ErrorIcon className="h-5 w-5 text-red-500" />
               <p className="text-sm text-red-500">{errorMessage}</p>
             </>
-          )}
+          )} */}
         </div>
       </div>
     </form>
@@ -79,7 +85,11 @@ const LoginPage = () => {
 function LoginButton() {
   const { pending } = useFormStatus();
   return (
-    <Button className="mt-4 w-full" aria-disabled={pending}>
+    <Button
+      className="mt-4 w-full"
+      aria-disabled={pending}
+      onClick={() => signIn()}
+    >
       <span>Iniciar sesión</span>
       <KeyboardArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>
