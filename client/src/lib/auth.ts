@@ -26,14 +26,9 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials.password) {
           return null;
         }
-        const mockUser = {
-          id: 1,
-          email: "admin@lactaconsejos.com",
-          name: "Paola Guzman",
-        };
         if (
-          credentials.email === mockUser.email &&
-          credentials.password === "123456"
+          credentials.email === process.env.ADMIN_ACCOUNT &&
+          credentials.password === process.env.ADMIN_PASSWORD
         ) {
           return user;
         }
