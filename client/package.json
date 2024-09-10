@@ -28,6 +28,7 @@
     "react-dom": "^18",
     "react-draft-wysiwyg": "^1.15.0",
     "uuid": "^9.0.1",
+    "ws": "^8.18.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
