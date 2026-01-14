@@ -3,6 +3,7 @@ import cors from "cors";
 import "./loadEnvironment.mjs";
 import "express-async-errors";
 import articles from "./routes/articles.mjs";
+import { initCronJobs } from "./cronJobs.mjs";
 import bodyParser from "body-parser";
 
 const app = express();
@@ -29,6 +30,9 @@ app.use((err, _req, res, next) => {
     .status(500)
     .send("Uh oh! An unexpected error occured. Email to: samilabud@gmail.com");
 });
+
+// Initialize cron jobs
+initCronJobs();
 
 app.listen(PORT, () => {
   console.log(`Lacta Consejos API listening on port ${PORT}`);

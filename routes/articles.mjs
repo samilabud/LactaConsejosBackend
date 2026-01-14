@@ -1,6 +1,7 @@
 import express from "express";
 import db from "../db/conn.mjs";
 import { ObjectId } from "mongodb";
+import { optimizeBase64Image } from "../utils/imageOptimizer.mjs";
 
 const router = express.Router();
 
@@ -78,6 +79,11 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const collection = await db.collection("articles");
   const newArticle = req.body;
+  
+  if (newArticle.image) {
+    newArticle.image = await optimizeBase64Image(newArticle.image);
+  }
+
   newArticle.date = new Date();
   newArticle.modify_date = new Date();
   const result = await collection.insertOne(newArticle);
@@ -88,10 +94,14 @@ router.post("/", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   const collection = await db.collection("articles");
   const filter = { _id: ObjectId(req.params.id) };
+  
+  if (req.body.image) {
+    req.body.image = await optimizeBase64Image(req.body.image);
+  }
+
   req.body.modify_date = new Date();
   const updateQuery = { $set: req.body };
   const result = await collection.updateOne(filter, updateQuery);
-  console.log(req);
   res.send(result).status(204);
 });
 
