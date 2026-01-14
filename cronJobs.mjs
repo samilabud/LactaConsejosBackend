@@ -24,17 +24,21 @@ export function initCronJobs() {
 export async function optimizeAllArticlesImages() {
   try {
     const collection = await db.collection("articles");
-    const articles = await collection.find({ image: { $exists: true } }).toArray();
+    // Only fetch id and image to save memory
+    const articles = await collection.find(
+      { image: { $exists: true } },
+      { projection: { image: 1 } }
+    ).toArray();
 
     console.log(`Checking ${articles.length} articles for image optimization...`);
 
     let optimizedCount = 0;
     for (const article of articles) {
-      if (isBase64Image(article.image)) {
+      if (article.image && isBase64Image(article.image)) {
         const originalLength = article.image.length;
         const optimizedImage = await optimizeBase64Image(article.image);
 
-        if (optimizedImage.length < originalLength) {
+        if (optimizedImage && optimizedImage.length < originalLength) {
           await collection.updateOne(
             { _id: article._id },
             { $set: { image: optimizedImage, modify_date: new Date() } }

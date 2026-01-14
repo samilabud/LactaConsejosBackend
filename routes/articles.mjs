@@ -6,16 +6,36 @@ import { optimizeAllArticlesImages } from "../cronJobs.mjs";
 
 const router = express.Router();
 
-// Get a list of 50 articles
+// Get a list of articles with pagination
 router.get("/", async (req, res) => {
+  const isPaginated = req.query.page || req.query.limit;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 50;
+  const skip = (page - 1) * limit;
+
   const collection = await db.collection("articles");
+  
   const results = await collection
     .find({})
     .sort({ modify_date: -1 })
-    .limit(50)
+    .skip(skip)
+    .limit(limit)
     .toArray();
 
-  res.send(results).status(200);
+  if (isPaginated) {
+    const total = await collection.countDocuments({});
+    res.send({
+      data: results,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit)
+      }
+    }).status(200);
+  } else {
+    res.send(results).status(200);
+  }
 });
 
 // Trigger image optimization manually

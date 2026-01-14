@@ -9,26 +9,34 @@ import sharp from 'sharp';
 export async function optimizeBase64Image(base64Str) {
   if (!base64Str || typeof base64Str !== 'string') return base64Str;
 
-  // Basic check for base64 image
+  let imageType = null;
+  let base64Data = null;
+  let hasPrefix = false;
+
+  // Check for data URI pattern
   const matches = base64Str.match(/^data:image\/([a-zA-Z+]+);base64,(.+)$/);
   
-  if (!matches) {
-    // If it doesn't match the data URI pattern, maybe it's raw base64?
-    // Let's try to process it as is if it looks like base64, 
-    // but for now let's be safe and return as is if no prefix.
-    // Sharp can handle buffers, but we need to know what we have.
-    return base64Str;
+  if (matches) {
+    imageType = matches[1];
+    base64Data = matches[2];
+    hasPrefix = true;
+  } else {
+    // Treat as raw base64
+    base64Data = base64Str;
+    hasPrefix = false;
   }
 
-  const imageType = matches[1];
-  const base64Data = matches[2];
   const buffer = Buffer.from(base64Data, 'base64');
 
   try {
     let pipeline = sharp(buffer);
 
-    // Get metadata to see if we should resize
+    // Get metadata to see if we should resize and to identify format if no prefix
     const metadata = await pipeline.metadata();
+    
+    if (!imageType) {
+      imageType = metadata.format;
+    }
 
     // Max width 1200px
     if (metadata.width > 1200) {
@@ -36,22 +44,28 @@ export async function optimizeBase64Image(base64Str) {
     }
 
     // Convert to webp for better compression, or keep original type but compress
-    // For simplicity and compatibility, we'll keep the original format but compress
     let compressedBuffer;
     if (imageType === 'jpeg' || imageType === 'jpg') {
       compressedBuffer = await pipeline.jpeg({ quality: 80 }).toBuffer();
     } else if (imageType === 'png') {
+      // If it's a large PNG, converting to JPEG or WebP could save much more space
+      // but let's stick to the original format unless it's specifically for web
       compressedBuffer = await pipeline.png({ quality: 80, compressionLevel: 9 }).toBuffer();
     } else if (imageType === 'webp') {
       compressedBuffer = await pipeline.webp({ quality: 80 }).toBuffer();
     } else {
-      // For other types, just resize if needed and convert to jpeg
+      // Default to jpeg if unknown
       compressedBuffer = await pipeline.jpeg({ quality: 80 }).toBuffer();
-      // Update prefix for next step
-      return `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
+      imageType = 'jpeg';
     }
 
-    return `data:image/${imageType};base64,${compressedBuffer.toString('base64')}`;
+    const optimizedBase64 = compressedBuffer.toString('base64');
+    
+    // Return in the same format (prefixed or raw) as it arrived
+    if (hasPrefix) {
+      return `data:image/${imageType};base64,${optimizedBase64}`;
+    }
+    return optimizedBase64;
   } catch (error) {
     console.error('Error optimizing image:', error);
     return base64Str; // Return original on error
@@ -65,5 +79,11 @@ export async function optimizeBase64Image(base64Str) {
  */
 export function isBase64Image(str) {
   if (!str || typeof str !== 'string') return false;
-  return /^data:image\/([a-zA-Z+]+);base64,/.test(str);
+  
+  // Matches data URI prefix or common base64 image start signatures
+  // /9j/ = jpeg, iVBORw = png, R0lGOD = gif, UklG = webp
+  const isDataUri = /^data:image\/([a-zA-Z+]+);base64,/.test(str);
+  const isRawBase64Image = /^(\/9j\/|iVBORw|R0lGOD|UklG)/.test(str);
+  
+  return isDataUri || isRawBase64Image;
 }
