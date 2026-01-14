@@ -2,6 +2,7 @@ import express from "express";
 import db from "../db/conn.mjs";
 import { ObjectId } from "mongodb";
 import { optimizeBase64Image } from "../utils/imageOptimizer.mjs";
+import { optimizeAllArticlesImages } from "../cronJobs.mjs";
 
 const router = express.Router();
 
@@ -15,6 +16,13 @@ router.get("/", async (req, res) => {
     .toArray();
 
   res.send(results).status(200);
+});
+
+// Trigger image optimization manually
+router.get("/optimize-images", async (req, res) => {
+  console.log("Manual image optimization triggered...");
+  await optimizeAllArticlesImages();
+  res.send({ message: "Image optimization completed" }).status(200);
 });
 // Fetches the latest articles by category with a limit of 5
 router.get("/latest/:category", async (req, res) => {
