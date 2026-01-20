@@ -6,6 +6,11 @@ import { optimizeAllArticlesImages } from "../cronJobs.mjs";
 
 const router = express.Router();
 
+const validateCategory = (category) => {
+  return typeof category === "string" && category.trim().length > 0;
+};
+
+
 // Get a list of articles with pagination
 router.get("/", async (req, res) => {
   const isPaginated = req.query.page || req.query.limit;
@@ -93,6 +98,27 @@ router.get("/categories", async (req, res) => {
   res.send(results).status(200);
 });
 
+// Rename a category in all articles
+router.patch("/categories/rename", async (req, res) => {
+  const { oldName, newName } = req.body;
+
+  if (!validateCategory(oldName) || !validateCategory(newName)) {
+    return res.status(400).send({ message: "Invalid category names provided" });
+  }
+
+  const collection = await db.collection("articles");
+  const result = await collection.updateMany(
+    { category: oldName },
+    { $set: { category: newName, modify_date: new Date() } }
+  );
+
+  res.send({ 
+    message: "Category renamed successfully", 
+    matchedCount: result.matchedCount, 
+    modifiedCount: result.modifiedCount 
+  }).status(200);
+});
+
 // Get a single article
 router.get("/:id", async (req, res) => {
   const collection = await db.collection("articles");
@@ -108,6 +134,10 @@ router.post("/", async (req, res) => {
   const collection = await db.collection("articles");
   const newArticle = req.body;
   
+  if (!validateCategory(newArticle.category)) {
+    return res.status(400).send({ message: "Category is required and cannot be empty" });
+  }
+
   if (newArticle.image) {
     newArticle.image = await optimizeBase64Image(newArticle.image);
   }
@@ -123,6 +153,10 @@ router.patch("/:id", async (req, res) => {
   const collection = await db.collection("articles");
   const filter = { _id: ObjectId(req.params.id) };
   
+  if (req.body.category !== undefined && !validateCategory(req.body.category)) {
+    return res.status(400).send({ message: "Category cannot be empty if provided" });
+  }
+
   if (req.body.image) {
     req.body.image = await optimizeBase64Image(req.body.image);
   }

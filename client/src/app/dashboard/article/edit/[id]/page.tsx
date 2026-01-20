@@ -106,6 +106,7 @@ export default function Edit({
 
   useEffect(() => {
     setTitle(dataArticle?.title);
+    setCategory(dataArticle?.category);
 
     const blocksFromHTML = convertFromHTML(dataArticle?.content || "");
     const content = ContentState.createFromBlockArray(
@@ -147,6 +148,12 @@ export default function Edit({
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!category || category.trim().length === 0) {
+      alert("Por favor, ingresa una categoría válida.");
+      return;
+    }
+
     try {
       saveArticle();
     } catch (e: any) {

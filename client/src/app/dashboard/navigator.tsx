@@ -11,6 +11,7 @@ import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
 import ArticleIcon from "@mui/icons-material/Article";
 import PublishIcon from "@mui/icons-material/Publish";
+import CategoryIcon from "@mui/icons-material/Category";
 import Link from "next/link";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { GlobalContext } from "./global-context";
@@ -35,9 +36,16 @@ const categories = [
         href: "/dashboard/article/add/",
         pageTitle: "Agregar Artículo",
       },
+      {
+        id: "Categorías",
+        icon: <CategoryIcon />,
+        href: "/dashboard/categories",
+        pageTitle: "Administrar Categorías",
+      },
     ],
   },
 ];
+
 
 const item = {
   py: "2px",

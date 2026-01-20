@@ -109,6 +109,11 @@ export default function Add() {
     e.preventDefault();
     if (!file) return;
 
+    if (!category || category.trim().length === 0) {
+      alert("Por favor, ingresa una categoría válida.");
+      return;
+    }
+
     try {
       addArticle();
     } catch (e: any) {
