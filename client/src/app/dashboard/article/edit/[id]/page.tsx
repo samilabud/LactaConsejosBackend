@@ -42,7 +42,7 @@ const modalStyle = {
 };
 
 const Editor = dynamic<EditorProps>(
-  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+  () => import("react-draft-wysiwyg").then((mod) => mod.Editor as any),
   { ssr: false }
 );
 
